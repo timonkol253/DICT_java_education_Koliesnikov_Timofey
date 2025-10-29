@@ -17,47 +17,68 @@ public class Hangman {
         }
 
         Set<Character> guessedLetters = new HashSet<>();
-        int attemptsLeft = 8;
+        int lives = 8;
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("HANGMAN");
 
-        while (attemptsLeft > 0) {
+        while (lives > 0) {
             System.out.println(new String(currentState));
             System.out.print("Input a letter: > ");
-            char letter = scanner.nextLine().charAt(0);
+            String input = scanner.nextLine();
 
-            // Перевіряємо, чи цю літеру вже пробували
+            // Перевірка: чи введено рівно один символ
+            if (input.length() != 1) {
+                System.out.println("You should input a single letter");
+                System.out.println();
+                continue;
+            }
+
+            char letter = input.charAt(0);
+
+            // Перевірка: чи це мала англійська літера
+            if (letter < 'a' || letter > 'z') {
+                System.out.println("Please enter a lowercase English letter");
+                System.out.println();
+                continue;
+            }
+
+            // Перевірка: чи літеру вже вводили
             if (guessedLetters.contains(letter)) {
-                System.out.println("No improvements");
-                attemptsLeft--;
+                System.out.println("You've already guessed this letter");
+                System.out.println();
+                continue;
+            }
+
+            // Якщо все добре — додаємо до використаних
+            guessedLetters.add(letter);
+
+            // Чи є літера у слові?
+            if (secretWord.indexOf(letter) == -1) {
+                // Немає — помилка
+                System.out.println("That letter doesn't appear in the word");
+                lives--;
             } else {
-                guessedLetters.add(letter);
-                // Чи є літера у слові?
-                if (secretWord.indexOf(letter) == -1) {
-                    System.out.println("That letter doesn't appear in the word");
-                    attemptsLeft--;
-                } else {
-                    // Відкриваємо всі входження літери
-                    for (int i = 0; i < secretWord.length(); i++) {
-                        if (secretWord.charAt(i) == letter) {
-                            currentState[i] = letter;
-                        }
+                // Є — відкриваємо всі входження
+                for (int i = 0; i < secretWord.length(); i++) {
+                    if (secretWord.charAt(i) == letter) {
+                        currentState[i] = letter;
                     }
                 }
             }
-            System.out.println(); // порожній рядок після кожного ходу
 
-            // Перевірка: чи слово повністю відгадане?
+            System.out.println(); // порожній рядок після ходу
+
+            // Перевірка на перемогу
             if (new String(currentState).equals(secretWord)) {
-                System.out.println("You guessed the word!");
+                System.out.println("You guessed the word " + secretWord + "!");
                 System.out.println("You survived!");
                 scanner.close();
                 return;
             }
         }
 
-        // Якщо вийшли з циклу — спроби закінчилися
+        // Програш
         System.out.println("You lost!");
         scanner.close();
     }
