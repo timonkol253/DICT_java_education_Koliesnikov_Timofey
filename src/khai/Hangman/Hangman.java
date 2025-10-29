@@ -7,19 +7,25 @@ public class Hangman {
     public static void main(String[] args) {
         String[] words = {"python", "java", "javascript", "kotlin"};
 
-        // Випадковий вибір слова
         Random random = new Random();
         String secretWord = words[random.nextInt(words.length)];
 
-        // Привітання та запит
+        // Створюємо підказку: перші 2 літери + решта '-'
+        StringBuilder hint = new StringBuilder();
+        for (int i = 0; i < secretWord.length(); i++) {
+            if (i < 2) {
+                hint.append(secretWord.charAt(i));
+            } else {
+                hint.append('-');
+            }
+        }
+
         System.out.println("HANGMAN");
-        System.out.print("Guess the word: > ");
+        System.out.print("Guess the word " + hint + ": > ");
 
-        // Зчитування введення
         Scanner scanner = new Scanner(System.in);
-        String guess = scanner.nextLine();
+        String guess = scanner.nextLine().trim(); // ← trim() видаляє пробіли на початку/в кінці
 
-        // Перевірка
         if (guess.equals(secretWord)) {
             System.out.println("You survived!");
         } else {
