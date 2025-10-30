@@ -3,7 +3,7 @@ package khai.CoffeeMachine;
 import java.util.Scanner;
 
 public class CoffeeMachine {
-    // Поля стану кавомашини
+    // Початковий стан кавомашини
     private static int water = 400;
     private static int milk = 540;
     private static int beans = 120;
@@ -13,30 +13,31 @@ public class CoffeeMachine {
     private static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
-        printState();
+        while (true) {
+            System.out.println("Write action (buy, fill, take, remaining, exit):");
+            String action = scanner.nextLine().trim();
 
-        System.out.println("Write action (buy, fill, take):");
-        String action = scanner.nextLine().trim();
-
-        switch (action) {
-            case "buy":
-                buy();
-                break;
-            case "fill":
-                fill();
-                break;
-            case "take":
-                take();
-                break;
-            default:
-                System.out.println("Unknown action");
-                return;
+            switch (action) {
+                case "buy":
+                    buy();
+                    break;
+                case "fill":
+                    fill();
+                    break;
+                case "take":
+                    take();
+                    break;
+                case "remaining":
+                    printState();
+                    break;
+                case "exit":
+                    return; // завершення програми
+                default:
+                    System.out.println("Unknown action");
+            }
         }
-
-        printState();
     }
 
-    // Виведення поточного стану
     private static void printState() {
         System.out.println("The coffee machine has:");
         System.out.println(water + " of water");
@@ -47,10 +48,13 @@ public class CoffeeMachine {
         System.out.println(); // порожній рядок для читабельності
     }
 
-    // Купівля кави
     private static void buy() {
-        System.out.println("What do you want to buy? 1 - espresso, 2 - latte, 3 - cappuccino:");
+        System.out.println("What do you want to buy? 1 - espresso, 2 - latte, 3 - cappuccino, back – to main menu:");
         String choice = scanner.nextLine().trim();
+
+        if ("back".equals(choice)) {
+            return; // повертаємось до головного меню
+        }
 
         int neededWater = 0, neededMilk = 0, neededBeans = 0, price = 0;
 
@@ -78,7 +82,7 @@ public class CoffeeMachine {
                 return;
         }
 
-        // Перевірка наявності інгредієнтів
+        // Перевірка ресурсів
         if (water < neededWater) {
             System.out.println("Sorry, not enough water!");
             return;
@@ -96,7 +100,7 @@ public class CoffeeMachine {
             return;
         }
 
-        // Віднімаємо інгредієнти, додаємо гроші
+        // Виконуємо покупку
         water -= neededWater;
         milk -= neededMilk;
         beans -= neededBeans;
@@ -106,22 +110,24 @@ public class CoffeeMachine {
         System.out.println("I have enough resources, making you a coffee!");
     }
 
-    // Поповнення запасів
     private static void fill() {
-        System.out.println("Write how many ml of water you want to add:");
+        System.out.println("Write how many ml of water do you want to add:");
         water += scanner.nextInt();
+        scanner.nextLine(); // спожити залишок рядка
 
-        System.out.println("Write how many ml of milk you want to add:");
+        System.out.println("Write how many ml of milk do you want to add:");
         milk += scanner.nextInt();
+        scanner.nextLine();
 
-        System.out.println("Write how many grams of coffee beans you want to add:");
+        System.out.println("Write how many grams of coffee beans do you want to add:");
         beans += scanner.nextInt();
+        scanner.nextLine();
 
-        System.out.println("Write how many disposable coffee cups you want to add:");
+        System.out.println("Write how many disposable cups of coffee do you want to add:");
         cups += scanner.nextInt();
+        scanner.nextLine();
     }
 
-    // Зняття грошей
     private static void take() {
         System.out.println("I gave you " + money);
         money = 0;
