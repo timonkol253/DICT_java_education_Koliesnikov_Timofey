@@ -4,79 +4,71 @@ import java.util.Scanner;
 
 public class TicTacToe {
     public static void main(String[] args) {
-        // Зчитуємо рядок із 9 символів, що описує стан гри
         Scanner scanner = new Scanner(System.in);
+
+        // Зчитуємо початковий стан поля (9 символів)
         System.out.print("Enter cells: ");
         String cells = scanner.nextLine();
 
-        // Виводимо ігрове поле у форматі 3x3 (як на Етапі 2)
+        // Виводимо початкове поле (перший вивід)
+        printGrid(cells);
+
+        // Цикл для введення координат, поки не буде правильного ходу
+        while (true) {
+            System.out.print("Enter the coordinates: ");
+            String input = scanner.nextLine().trim();
+
+            // Спроба розбити ввід на дві частини
+            String[] parts = input.split("\\s+");
+
+            // Перевірка: чи введено рівно два елементи
+            if (parts.length != 2) {
+                System.out.println("You should enter numbers!");
+                continue;
+            }
+
+            // Перевірка, чи обидва елементи — цілі числа
+            int row, col;
+            try {
+                row = Integer.parseInt(parts[0]);
+                col = Integer.parseInt(parts[1]);
+            } catch (NumberFormatException e) {
+                System.out.println("You should enter numbers!");
+                continue;
+            }
+
+            // Перевірка діапазону координат (1–3)
+            if (row < 1 || row > 3 || col < 1 || col > 3) {
+                System.out.println("Coordinates should be from 1 to 3!");
+                continue;
+            }
+
+            // Перетворюємо координати (row, col) у індекс у рядку
+            int index = (row - 1) * 3 + (col - 1);
+
+            // Перевірка, чи клітинка вільна
+            if (cells.charAt(index) != '_') {
+                System.out.println("This cell is occupied! Choose another one!");
+                continue;
+            }
+
+            // Робимо хід: замінюємо '_' на 'X'
+            StringBuilder updated = new StringBuilder(cells);
+            updated.setCharAt(index, 'X');
+            cells = updated.toString();
+
+            // Виводимо оновлене поле (другий і останній вивід)
+            printGrid(cells);
+            break; // Успішний хід — виходимо з циклу
+        }
+    }
+
+    // Допоміжний метод для виведення ігрового поля у форматі 3x3
+    private static void printGrid(String cells) {
         System.out.println("---------");
         System.out.println("| " + cells.charAt(0) + " " + cells.charAt(1) + " " + cells.charAt(2) + " |");
         System.out.println("| " + cells.charAt(3) + " " + cells.charAt(4) + " " + cells.charAt(5) + " |");
         System.out.println("| " + cells.charAt(6) + " " + cells.charAt(7) + " " + cells.charAt(8) + " |");
         System.out.println("---------");
-
-        // Підраховуємо кількість 'X' та 'O'
-        int countX = 0;
-        int countO = 0;
-        for (char c : cells.toCharArray()) {
-            if (c == 'X') countX++;
-            else if (c == 'O') countO++;
-        }
-
-        // Перевіряємо, чи різниця в кількості символів більша за 1 → неможливий стан
-        if (Math.abs(countX - countO) > 1) {
-            System.out.println("Impossible");
-            return;
-        }
-
-        // Створюємо двовимірний масив для зручної перевірки перемоги
-        char[][] board = {
-                {cells.charAt(0), cells.charAt(1), cells.charAt(2)},
-                {cells.charAt(3), cells.charAt(4), cells.charAt(5)},
-                {cells.charAt(6), cells.charAt(7), cells.charAt(8)}
-        };
-
-        // Перевіряємо, чи виграв 'X' або 'O'
-        boolean xWins = checkWin(board, 'X');
-        boolean oWins = checkWin(board, 'O');
-
-        // Якщо обидва гравці мають три поспіль — стан неможливий
-        if (xWins && oWins) {
-            System.out.println("Impossible");
-            return;
-        }
-
-        // Визначаємо кінцевий стан гри
-        if (xWins) {
-            System.out.println("X wins");
-        } else if (oWins) {
-            System.out.println("O wins");
-        } else if (cells.contains("_")) {
-            System.out.println("Game not finished");
-        } else {
-            System.out.println("Draw");
-        }
-    }
-
-    // Допоміжний метод: перевіряє, чи виграв певний гравець
-    private static boolean checkWin(char[][] board, char player) {
-        // Перевірка рядків
-        for (int i = 0; i < 3; i++) {
-            if (board[i][0] == player && board[i][1] == player && board[i][2] == player)
-                return true;
-        }
-        // Перевірка стовпців
-        for (int j = 0; j < 3; j++) {
-            if (board[0][j] == player && board[1][j] == player && board[2][j] == player)
-                return true;
-        }
-        // Перевірка діагоналей
-        if (board[0][0] == player && board[1][1] == player && board[2][2] == player)
-            return true;
-        if (board[0][2] == player && board[1][1] == player && board[2][0] == player)
-            return true;
-
-        return false;
     }
 }
