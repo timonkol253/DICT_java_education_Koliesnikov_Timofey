@@ -5,20 +5,15 @@ import java.util.Scanner;
 public class TicTacToe {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-
-        // Зчитуємо початковий стан поля (9 символів)
-        System.out.print("Enter cells: ");
-        String cells = scanner.nextLine();
-
-        // Виводимо початкове поле (перший вивід)
+        // Початкове порожнє поле
+        String cells = "_________";
         printGrid(cells);
 
-        // Цикл для введення координат, поки не буде правильного ходу
+        char currentPlayer = 'X'; // Перший гравець — X
+
         while (true) {
             System.out.print("Enter the coordinates: ");
             String input = scanner.nextLine().trim();
-
-            // Спроба розбити ввід на дві частини
             String[] parts = input.split("\\s+");
 
             // Перевірка: чи введено рівно два елементи
@@ -27,7 +22,6 @@ public class TicTacToe {
                 continue;
             }
 
-            // Перевірка, чи обидва елементи — цілі числа
             int row, col;
             try {
                 row = Integer.parseInt(parts[0]);
@@ -37,13 +31,13 @@ public class TicTacToe {
                 continue;
             }
 
-            // Перевірка діапазону координат (1–3)
+            // Перевірка діапазону
             if (row < 1 || row > 3 || col < 1 || col > 3) {
                 System.out.println("Coordinates should be from 1 to 3!");
                 continue;
             }
 
-            // Перетворюємо координати (row, col) у індекс у рядку
+            // Перетворення координат у індекс
             int index = (row - 1) * 3 + (col - 1);
 
             // Перевірка, чи клітинка вільна
@@ -52,23 +46,68 @@ public class TicTacToe {
                 continue;
             }
 
-            // Робимо хід: замінюємо '_' на 'X'
+            // Робимо хід
             StringBuilder updated = new StringBuilder(cells);
-            updated.setCharAt(index, 'X');
+            updated.setCharAt(index, currentPlayer);
             cells = updated.toString();
 
-            // Виводимо оновлене поле (другий і останній вивід)
+            // Виводимо оновлене поле
             printGrid(cells);
-            break; // Успішний хід — виходимо з циклу
+
+            // Перевіряємо результат
+            String result = checkGameStatus(cells);
+            if (!result.equals("Game not finished")) {
+                System.out.println(result);
+                break;
+            }
+
+            // Зміна гравця
+            currentPlayer = (currentPlayer == 'X') ? 'O' : 'X';
         }
     }
 
-    // Допоміжний метод для виведення ігрового поля у форматі 3x3
     private static void printGrid(String cells) {
         System.out.println("---------");
         System.out.println("| " + cells.charAt(0) + " " + cells.charAt(1) + " " + cells.charAt(2) + " |");
         System.out.println("| " + cells.charAt(3) + " " + cells.charAt(4) + " " + cells.charAt(5) + " |");
         System.out.println("| " + cells.charAt(6) + " " + cells.charAt(7) + " " + cells.charAt(8) + " |");
         System.out.println("---------");
+    }
+
+    private static String checkGameStatus(String cells) {
+        // Перевірка всіх можливих ліній
+        char[][] board = new char[3][3];
+        for (int i = 0; i < 9; i++) {
+            board[i / 3][i % 3] = cells.charAt(i);
+        }
+
+        // Перевірка рядків
+        for (int i = 0; i < 3; i++) {
+            if (board[i][0] != '_' && board[i][0] == board[i][1] && board[i][1] == board[i][2]) {
+                return board[i][0] + " wins";
+            }
+        }
+
+        // Перевірка стовпців
+        for (int j = 0; j < 3; j++) {
+            if (board[0][j] != '_' && board[0][j] == board[1][j] && board[1][j] == board[2][j]) {
+                return board[0][j] + " wins";
+            }
+        }
+
+        // Перевірка діагоналей
+        if (board[0][0] != '_' && board[0][0] == board[1][1] && board[1][1] == board[2][2]) {
+            return board[0][0] + " wins";
+        }
+        if (board[0][2] != '_' && board[0][2] == board[1][1] && board[1][1] == board[2][0]) {
+            return board[0][2] + " wins";
+        }
+
+        // Перевірка на нічию
+        if (!cells.contains("_")) {
+            return "Draw";
+        }
+
+        return "Game not finished";
     }
 }
